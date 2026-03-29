@@ -1,20 +1,31 @@
 package main
 
 import(
-	//"github.com/PuerkitoBio/goquery"
+	"github.com/PuerkitoBio/goquery"
+	"strings"
 )
 
-func getHeadingFromHTML(html string) string {
-	// Scan string for <h1></h1> to get the title
-	// If there is no <h1>, scan for <h2> instead
-	// Else return empty string (no heading)
-	return ""
+func getHeadingFromHTML(html string) (string, error) {
+	// Create document reader to parse input
+	reader := strings.NewReader(html)
+	doc, err := goquery.NewDocumentFromReader(reader)
+	if err != nil {
+		return "", err
+	}
+
+	// Find header tag in document
+	header := doc.Find("h1").Text()
+	if header == "" {
+		// <h2> as a fallback
+		header = doc.Find("h2").Text()
+	}
+	// If still empty, return anyway
+	
+	return header, nil
 }
 
-func getFirstParagraphFromHTML(html string) string {
-	// Scan for <main> tag and then check if <p> within
-	// If so, return the contents of that <p>
-	// Else, go back to the top and find the first instance of <p>
-	// Return empty if no <p> is found
-	return ""
+func getFirstParagraphFromHTML(html string) (string, error) {
+
+
+	return "", nil
 }
