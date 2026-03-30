@@ -25,7 +25,26 @@ func getHeadingFromHTML(html string) (string, error) {
 }
 
 func getFirstParagraphFromHTML(html string) (string, error) {
+	reader := strings.NewReader(html)
+	doc, err := goquery.NewDocumentFromReader(reader)
+	if err != nil {
+		return "", err
+	}
 
+	paragraph := ""
+	main := doc.Find("main")
 
-	return "", nil
+	// If <main> tag is present
+	if main.Length() > 0 {
+		// Find first <p> tag within it
+		paragraph = main.Find("p").First().Text()
+	}
+
+	// If paragraph is empty, default to first <p> tag in doc
+	if paragraph == "" {
+		paragraph = doc.Find("p").First().Text()
+	}
+
+	// If still empty, return anyway
+	return paragraph, nil
 }
