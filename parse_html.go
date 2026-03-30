@@ -19,8 +19,8 @@ func getHeadingFromHTML(html string) (string, error) {
 		// <h2> as a fallback
 		header = doc.Find("h2").Text()
 	}
-	// If still empty, return anyway
 	
+	// If still empty, return anyway
 	return header, nil
 }
 
