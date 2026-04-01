@@ -51,14 +51,26 @@ func getFirstParagraphFromHTML(html string) (string, error) {
 }
 
 func getURLsFromHTML(htmlBody string, baseURL *url.URL) ([]string, error) {
-	// Parse the htmlBody for instances of URLs and also
-	// for relative paths, such as /logo.png etc.
+	reader := strings.NewReader(htmlBody)
+	doc, err := goquery.NewDocumentFromReader(reader)
+	if err != nil {
+		return []string{}, err
+	}
 
-	// Create a list of all of these instances
-	// including all relative paths being turned into
-	// absolute ones, such as www.crawler.com/logo.png
+	// List of all links
+	links := []string{}
 
-	// Make sure to find every <a> tag
+	// Each() runs a given fuction whenever it matches the Find() param
+	doc.Find("a[href]").Each(func(_ int, s *goquery.Selection) {
+		link, _ := s.Attr("href")
 
-	return []string{""}, nil
+		// Relative paths to absolute
+		if strings.HasPrefix(link, "/") {
+			link = baseURL.String() + link
+		}
+
+		links = append(links, link)
+	})
+
+	return links, nil
 }
