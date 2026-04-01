@@ -98,11 +98,11 @@ func TestGetFirstParagraphFromHTML(t *testing.T) {
 func TestGetURLsFromHTMLAbsolute(t *testing.T) {
 	inputURL := "https://crawler-test.com"
 	inputBody := `
-	<html>
-		<body>
-			<a href="https://crawler-test.com"><span>Boot.dev</span></a>
-		</body>
-	</html>`
+		<html>
+			<body>
+				<a href="https://crawler-test.com"><span>Boot.dev</span></a>
+			</body>
+		</html>`
 
     baseURL, err := url.Parse(inputURL)
     if err != nil {
@@ -124,11 +124,11 @@ func TestGetURLsFromHTMLAbsolute(t *testing.T) {
 func TestGetURLsFromHTMLRelative(t *testing.T) {
 	inputURL := "https://crawler-test.com"
 	inputBody := `
-	<html>
-		<body>
-			<a href="/some/relative/path"><span>Boot.dev</span></a>
-		</body>
-	</html>`
+		<html>
+			<body>
+				<a href="/some/relative/path"><span>Boot.dev</span></a>
+			</body>
+		</html>`
 
     baseURL, err := url.Parse(inputURL)
     if err != nil {
@@ -150,11 +150,11 @@ func TestGetURLsFromHTMLRelative(t *testing.T) {
 func TestGetURLsFromHTMLEmpty(t *testing.T) {
 	inputURL := "https://crawler-test.com"
 	inputBody := `
-	<html>
-		<body>
-			<p>Nothing here!</p>
-		</body>
-	</html>`
+		<html>
+			<body>
+				<p>Nothing here!</p>
+			</body>
+		</html>`
 
     baseURL, err := url.Parse(inputURL)
     if err != nil {
@@ -163,6 +163,83 @@ func TestGetURLsFromHTMLEmpty(t *testing.T) {
     }
 
 	actual, err := getURLsFromHTML(inputBody, baseURL)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	expected := []string{}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("expected %v, got %v", expected, actual)
+	}
+}
+
+func TestGetImagesFromHTMLAbsolute(t *testing.T) {
+	inputURL := "https://crawler-test.com"
+	inputBody := `
+		<html>
+			<body>
+				<img src="https://crawler-test.com/logo.png" alt="Logo">
+			</body>
+		</html>`
+
+    baseURL, err := url.Parse(inputURL)
+    if err != nil {
+        t.Errorf("couldn't parse input URL: %v", err)
+        return
+    }
+
+	actual, err := getImagesFromHTML(inputBody, baseURL)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	expected := []string{"https://crawler-test.com/logo.png"}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("expected %v, got %v", expected, actual)
+	}
+}
+
+func TestGetImagesFromHTMLRelative(t *testing.T) {
+	inputURL := "https://crawler-test.com"
+	inputBody := `
+		<html>
+			<body>
+				<img src="/logo.png" alt="Logo">
+			</body>
+		</html>`
+
+    baseURL, err := url.Parse(inputURL)
+    if err != nil {
+        t.Errorf("couldn't parse input URL: %v", err)
+        return
+    }
+
+	actual, err := getImagesFromHTML(inputBody, baseURL)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	expected := []string{"https://crawler-test.com/logo.png"}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("expected %v, got %v", expected, actual)
+	}
+}
+
+func TestGetImagesFromHTMLEmpty(t *testing.T) {
+	inputURL := "https://crawler-test.com"
+	inputBody := `
+		<html>
+			<body>
+				<p>Nothing here!</p>
+			</body>
+		</html>`
+    baseURL, err := url.Parse(inputURL)
+    if err != nil {
+        t.Errorf("couldn't parse input URL: %v", err)
+        return
+    }
+
+	actual, err := getImagesFromHTML(inputBody, baseURL)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

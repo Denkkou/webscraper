@@ -74,3 +74,7 @@ func getURLsFromHTML(htmlBody string, baseURL *url.URL) ([]string, error) {
 
 	return links, nil
 }
+
+func getImagesFromHTML(htmlBody string, baseURL *url.URL) ([]string, error) {
+	return []string{}, nil
+}
