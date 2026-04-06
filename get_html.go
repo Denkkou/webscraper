@@ -4,10 +4,11 @@ import (
 	"net/http"
 	"fmt"
 	"io"
+	"strings"
 )
 
 func getHTML(rawURL string) (string, error) {
-	client := http.Client{}
+	client := &http.Client{}
 	
 	// Build request, set header
 	req, err := http.NewRequest("GET", rawURL, nil)
@@ -29,16 +30,16 @@ func getHTML(rawURL string) (string, error) {
 	}
 
 	// Catch non-text/html content
-	
-
-	// Catch others
-
+	contentType := res.Header.Get("Content-Type")
+	if !strings.Contains(contentType, "text/html") {
+		return "", fmt.Errorf("ERROR: Response does not contain text/html header")
+	}
 
 	// Read data
 	html, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("ERROR: Could not read response body: %v", err)
 	}
 
-	return "", nil
+	return string(html), nil
 }
