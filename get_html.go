@@ -1,18 +1,44 @@
 package main 
 
 import (
-
+	"net/http"
+	"fmt"
+	"io"
 )
 
 func getHTML(rawURL string) (string, error) {
-	// build http request to fetch page of rawURL
+	client := http.Client{}
+	
+	// Build request, set header
+	req, err := http.NewRequest("GET", rawURL, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("User-Agent", "BootCrawler/1.0")
 
-	// return error if http status code is 400+
+	// Send request
+	res, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
 
-	// return error if content header is not text/html
+	// Catch error codes
+	if res.StatusCode >= 400 {
+		return "", fmt.Errorf("ERROR: Response status code %v", res.StatusCode) 
+	}
 
-	// return other errors
+	// Catch non-text/html content
+	
 
-	//return page's html as string
+	// Catch others
+
+
+	// Read data
+	html, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+
 	return "", nil
 }
