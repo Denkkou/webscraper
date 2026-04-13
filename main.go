@@ -23,10 +23,12 @@ func main() {
 	base_url := args[0]
 	fmt.Printf("starting crawl of: %v", base_url)
 
-	// Get HTML test response
-	response, err := getHTML(base_url)
-	if err != nil {
-		fmt.Errorf("Failed to get HTML: %v", err)
+	// Recursive call
+	pages := make(map[string]int)
+	crawlPage(base_url, base_url, pages)
+
+	// Print keys and values of the pages map
+	for key, val := range pages {
+		fmt.Printf("\n%s, %d", key, val)
 	}
-	fmt.Printf("Response: %s\n", response)
 }
