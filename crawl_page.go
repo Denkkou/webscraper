@@ -3,7 +3,45 @@ package main
 import (
 	"fmt"
 	"net/url"
+	"sync"
 )
+
+type config struct {
+	pages				map[string]PageData
+	baseURL				*url.URL
+	mu					*sync.Mutex
+	concurrencyControl	chan struct{}
+	wg					*sync.WaitGroup
+}
+
+func (cfg *config) crawlPageConcurrent(rawCurrentURL string) {
+	// Parse rawCurrentURL into struct
+	// Ensure on same domain as cfg.baseURL
+	// Normalize rawCurrentURL
+	// Add page visit on normalizedCurrentURL
+	// If returns True, iterate PageData.OutgoingLinks
+	// Spawn a goroutine for each and recursively call this function
+	// If returns False, return
+	// If there are no links, return
+}
+
+func (cfg *config) addPageVisit(normalizedURL string) (isFirst bool) {
+	// If page is already visited, return false
+	if _, ok := cfg.pages[normalizedURL]; ok {
+		return false
+	}
+
+	// Otherwise, extract the data and return true
+	html, err := getHTML(normalizedURL)
+	if err != nil {
+		fmt.Errorf("ERROR: Couldn't get HTML of page %s, reason: %v", normalizedURL, err)
+		return
+	}
+
+	cfg.pages[normalizedURL] = extractPageData(html, normalizedURL)
+	return true
+}
+
 
 func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 	// Parse both URLs into URL structs
